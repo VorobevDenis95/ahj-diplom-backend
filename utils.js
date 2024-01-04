@@ -11,7 +11,15 @@ function formatDate(date) {
     return `${hours}:${minutes} ${day}.${mount}.${year}`;
 }
 
+
+function linkGenerator(str) {
+    // return str.match(/(https?:\/\[^\s]+)/g, '<a href=$1>$1</a>');
+    // return str.match(/(https?:\/\/)?[a-z0-9~_\-\.]+\.[a-z]{2,9}(\/|:|\?[!-~]*)?/g);
+    return str.match(/https?:\/\/[^\s]+/gm);
+}
+
 module.exports = {
     replaceType,
-    formatDate
+    formatDate,
+    linkGenerator,
 }

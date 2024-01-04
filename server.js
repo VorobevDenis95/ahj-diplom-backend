@@ -65,14 +65,24 @@ router.get('/messages/all', async(ctx) => {
   ctx.response.body = messages;
 })
 
+// все сообщения lazy-load
+router.post('/messages/all', async(ctx) => {
+  const start = messages.length - ctx.request.body.quantity;
+
+  const newList = structuredClone(messages).slice((newList.length - quantity), -10);
+})
+
 // создание сообщения
 router.post('/messages/createMessage', async(ctx) => {
   const files = Object.values(ctx.request.files);
 
+  const links = utils.linkGenerator(ctx.request.body.message); 
+  
   const message = {
     id: uuid.v4(),
     text: ctx.request.body.message || '',
     files: [],
+    links: links,
     favorites: false,
     data: new Date(),
   }
@@ -86,9 +96,11 @@ router.post('/messages/createMessage', async(ctx) => {
 
       fs.copyFileSync(item.filepath, upload + item.originalFilename);
       // const src = path.join(__dirname, `/${item.originalFilename}`);
+      console.log(item);
+      const name = item.originalFilename;
       const src = `/${item.originalFilename}`;
       const type = utils.replaceType(item.mimetype);
-      message.files.push({src: src, type: type});  
+      message.files.push({name: name, src: src, type: type});  
     })
   }
 
