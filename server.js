@@ -64,12 +64,19 @@ const router = new Router();
 router.get('/messages/all', async(ctx) => {
   ctx.response.body = messages;
 })
-
-// все сообщения lazy-load
+// количество сообщений
+router.get('/messages/length', async(ctx) => {
+  ctx.response.body = messages.length;
+})
+// сообщения lazy-load
 router.post('/messages/all', async(ctx) => {
-  const start = messages.length - ctx.request.body.quantity;
-
-  const newList = structuredClone(messages).slice((newList.length - quantity), -10);
+  const lengthListBack = messages.length;
+  const lengthListFront = ctx.request.body.length;
+  let step = lengthListBack - lengthListFront < 10 ? lengthListBack - lengthListFront : 10;
+  const length = messages.length - step - lengthListFront;
+  const newList = structuredClone(messages).slice(length, lengthListBack - lengthListFront);
+  
+  ctx.response.body = JSON.stringify(newList);
 })
 
 // создание сообщения
@@ -82,7 +89,7 @@ router.post('/messages/createMessage', async(ctx) => {
     id: uuid.v4(),
     text: ctx.request.body.message || '',
     files: [],
-    links: links,
+    links: links || null,
     favorites: false,
     data: new Date(),
   }
@@ -139,6 +146,5 @@ app.use(router.routes()).use(router.allowedMethods());
 
 const port = process.env.PORT || 3000;
 const server = http.createServer(app.callback());
-
 
 server.listen(port);
