@@ -7,7 +7,7 @@ const WS = require('ws');
 const Router = require('koa-router');
 const path = require('path');
 const uuid = require('uuid');
-
+const cors = require('@koa/cors');
 const utils = require('./utils');
 
 
@@ -16,6 +16,15 @@ const public = path.join(__dirname, '/public');
 const app= new Koa();
 
 app.use(koaStatic(public));
+
+app.use(cors({
+  origin(ctx) {
+    return ctx.get('Origin') || '*';
+  },
+  credentials: true,
+  allowMethods: ['GET', 'PUT', 'POST', 'DELETE', 'HEAD', 'OPTIONS'],
+  allowHeaders: ['Acces-Control-Allow-Origin', 'Content-Type', 'Authorization', 'Accept'],
+}));
 
 app.use(koaBody({
     urlencoded: true,
@@ -71,19 +80,26 @@ router.get('/messages/length', async(ctx) => {
 // сообщения lazy-load
 router.post('/messages/all', async(ctx) => {
   const lengthListBack = messages.length;
-  const lengthListFront = ctx.request.body.length;
+  console.log(ctx.request.body);
+  const lengthListFront = ctx.request.body;
   let step = lengthListBack - lengthListFront < 10 ? lengthListBack - lengthListFront : 10;
-  const length = messages.length - step - lengthListFront;
+  const length = lengthListBack - step - lengthListFront;
   const newList = structuredClone(messages).slice(length, lengthListBack - lengthListFront);
-  
+  console.log('list');
+
   ctx.response.body = JSON.stringify(newList);
 })
 
 // создание сообщения
 router.post('/messages/createMessage', async(ctx) => {
   const files = Object.values(ctx.request.files);
-
-  const links = utils.linkGenerator(ctx.request.body.message); 
+  const links = ctx.request.body.message !== undefined ? utils.linkGenerator(ctx.request.body.message) : null;
+  console.log(ctx.request.body.message === undefined);
+  console.log('сообщение');
+  // if (ctx.request.body.message) {
+  //   const links = utils.linkGenerator(ctx.request.body.message);
+  // }
+   
   
   const message = {
     id: uuid.v4(),
