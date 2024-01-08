@@ -90,6 +90,19 @@ router.post('/messages/all', async(ctx) => {
   ctx.response.body = JSON.stringify(newList);
 })
 
+// поиск сообщений 
+router.post('/messages/search', async(ctx) => {
+  const str = ctx.request.body;
+  const searchMessages = [];
+  messages.map(msg => {
+    if (msg.text.toLowerCase().includes(str)) {
+      searchMessages.push(msg);
+    }
+  })
+
+  ctx.response.body = JSON.stringify(searchMessages);
+})
+
 // создание сообщения
 router.post('/messages/createMessage', async(ctx) => {
   const files = Object.values(ctx.request.files);
@@ -100,7 +113,6 @@ router.post('/messages/createMessage', async(ctx) => {
   //   const links = utils.linkGenerator(ctx.request.body.message);
   // }
    
-  
   const message = {
     id: uuid.v4(),
     text: ctx.request.body.message || '',
