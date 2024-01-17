@@ -67,12 +67,41 @@ app.use(async (ctx, next) => {
 
 let messages = [];
 
+let pin = null;
+
 const router = new Router();
 
 // все сообщения
 router.get('/messages/all', async(ctx) => {
   ctx.response.body = messages;
 })
+
+// избранные
+router.get('/messages/favorites', async(ctx) => {
+  ctx.response.body = messages.filter(el => el.favorites === true);
+})
+
+// закрепленное сообщение
+router.get('/messages/pin/message', async(ctx) => {
+  ctx.response.body = pin;
+})
+
+// закрепленние сообщения
+router.post('/messages/pin/message', async(ctx) => {
+  const id = ctx.request.body;
+  const element = messages.find(el => el.id === id);
+  if (element.pin) {
+    element.pin = false;
+    pin = null;
+  } else {
+    element.pin = true;
+    pin = element;
+  }
+  ctx.response.status = 200;
+})
+
+
+
 // количество сообщений
 router.get('/messages/length', async(ctx) => {
   ctx.response.body = messages.length;
@@ -119,6 +148,7 @@ router.post('/messages/createMessage', async(ctx) => {
     files: [],
     links: links || null,
     favorites: false,
+    pin: false,
     data: new Date(),
   }
 
