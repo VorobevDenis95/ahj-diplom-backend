@@ -67,7 +67,7 @@ app.use(async (ctx, next) => {
 
 let messages = [];
 
-let pin = null;
+let pin = {};
 
 const router = new Router();
 
@@ -92,11 +92,12 @@ router.post('/messages/pin/message', async(ctx) => {
   const element = messages.find(el => el.id === id);
   if (element.pin) {
     element.pin = false;
-    pin = null;
+    pin = {};
   } else {
     element.pin = true;
     pin = element;
   }
+  console.log(pin);
   ctx.response.status = 200;
 })
 
