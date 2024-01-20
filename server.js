@@ -81,6 +81,17 @@ router.get('/messages/favorites', async(ctx) => {
   ctx.response.body = messages.filter(el => el.favorites === true);
 })
 
+// назначить избранным / удалить из избранного
+router.post('/messages/favorites', async(ctx) => {
+  const id = ctx.request.body; 
+  const element = messages.find(el => el.id === id);
+  if (element.id) {
+    element.favorites === true ? element.favorites = false : element.favorites = true;
+  }
+  ctx.response.body = 'ok';
+})
+
+
 // закрепленное сообщение
 router.get('/messages/pin/message', async(ctx) => {
   ctx.response.body = pin;
@@ -90,18 +101,21 @@ router.get('/messages/pin/message', async(ctx) => {
 router.post('/messages/pin/message', async(ctx) => {
   const id = ctx.request.body;
   const element = messages.find(el => el.id === id);
-  if (element.pin) {
-    element.pin = false;
-    pin = {};
-  } else {
-    element.pin = true;
-    pin = element;
+
+  if (element.id) {
+    if (element.id === pin.id) {
+      element.pin = false;
+      pin = {};
+    } else if (element.id !== pin.id && !element.pin) {
+      const elPin = messages.find(el => el.pin === true);
+      if (elPin) elPin.pin = false;
+      element.pin = true;
+      pin = element;
+    }
   }
-  console.log(pin);
+
   ctx.response.status = 200;
 })
-
-
 
 // количество сообщений
 router.get('/messages/length', async(ctx) => {
