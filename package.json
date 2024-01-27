@@ -20,6 +20,7 @@
     "ws": "^8.14.2"
   },
   "devDependencies": {
-    "@koa/cors": "^5.0.0"
+    "@koa/cors": "^5.0.0",
+    "mime-types": "^2.1.35"
   }
 }

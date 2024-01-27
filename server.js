@@ -9,7 +9,7 @@ const path = require('path');
 const uuid = require('uuid');
 const cors = require('@koa/cors');
 const utils = require('./utils');
-
+const mime = require('mime-types');
 
 const public = path.join(__dirname, '/public');
 
@@ -32,6 +32,7 @@ app.use(koaBody({
     text: true,
     json: true,
 }));
+
 
 app.use(async (ctx, next) => {
   const origin = ctx.request.get('Origin');
@@ -71,6 +72,19 @@ let pin = {};
 
 const router = new Router();
 
+
+router.post('/download', async(ctx) => {
+  const fileName = `${ctx.request.body}`;
+  try {
+    if (fs.existsSync(`${public}/${fileName}`)) {
+      ctx.attachment(fileName);
+      ctx.response.body = fs.createReadStream(`${public}/${fileName}`);
+    }
+  } catch (error) {
+    ctx.throw(500, error);
+  }
+})
+
 // все сообщения
 router.get('/messages/all', async(ctx) => {
   ctx.response.body = messages;
@@ -87,8 +101,9 @@ router.post('/messages/favorites', async(ctx) => {
   const element = messages.find(el => el.id === id);
   if (element.id) {
     element.favorites === true ? element.favorites = false : element.favorites = true;
+    ctx.response.body = {favorites: element.favorites};
   }
-  ctx.response.body = 'ok';
+  
 })
 
 
