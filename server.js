@@ -65,10 +65,44 @@ app.use(async (ctx, next) => {
   }
 });
 
+const messages = [
+  {
+    id: 'f38d8264-822c-4d9e-8cd2-164f2037d80b',
+    text: 'Привет! Добро пожаловать в Chaos Organaizer!\r\n' +
+      'Здесь можно хранить информацию',
+    files: [],
+    links: null,
+    favorites: false,
+    pin: true,
+    data: '2024-01-29T18:11:14.107Z'
+  },
+  {
+    id: '0be1b7eb-b5f5-451c-878e-636a4a96ed69',
+    text: 'Ты можешь хранить фотографии, видео, аудио\r\n' +
+      'Можешь самостоятельно записывать аудио и видео сообщения\r\n' +
+      'Закреплять сообщение и добавлять в избранное',
+    files: [ {name: 'cat.jpeg', src:`/cat.jpeg`, type: 'image'},
+    {name: 'cat2.jpeg', src:`/cat2.jpeg`, type: 'image'},
+    {name: 'cat3.jpg', src:`/cat3.jpg`, type: 'image'},
+    {name: 'Король И Шут - Лесник.mp3', src:'/Король И Шут - Лесник.mp3', type: 'audio'}
+  ],
+    links: null,
+    favorites: false,
+    pin: false,
+    data: '2024-01-29T18:12:38.021Z'
+  }
+]
 
-let messages = [];
-
-let pin = {};
+let pin =   {
+  id: 'f38d8264-822c-4d9e-8cd2-164f2037d80b',
+  text: 'Привет! Добро пожаловать в Chaos Organaizer!\r\n' +
+    'Здесь можно хранить информацию',
+  files: [],
+  links: null,
+  favorites: false,
+  pin: true,
+  data: '2024-01-29T18:11:14.107Z'
+}
 
 const router = new Router();
 
@@ -196,11 +230,12 @@ router.post('/messages/createMessage', async(ctx) => {
       const src = `/${item.originalFilename}`;
       const type = utils.replaceType(item.mimetype);
       message.files.push({name: name, src: src, type: type});  
+      console.log({name, src, type});
     })
   }
 
   messages.push(message);
-
+  // console.log(messages[1].files);
   // const { name } = ctx.request.body;
 
   ctx.response.set('Access-Control-Allow-Origin', '*');
